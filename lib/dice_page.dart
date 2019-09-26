@@ -219,12 +219,16 @@ class _DicePageState extends State<DicePage> {
               return Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[...buildDice(_die1, _die2, _die3)]);
+                  children: <Widget>[
+                    ...buildDice(_die1, _die2, _die3, _dicePosition)
+                  ]);
             } else {
               return Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[...buildDice(_die1, _die2, _die3)]);
+                  children: <Widget>[
+                    ...buildDice(_die1, _die2, _die3, _dicePosition)
+                  ]);
             }
           }),
         ),

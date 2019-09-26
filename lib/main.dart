@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 // import 'dice_page.dart';
-import 'panel_home.dart';
+import 'game_page.dart';
 import 'theme.dart';
 
 void main() => runApp(MyApp());
@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Cee-lo',
       theme: panelTheme,
-      home: PanelHome(),
+      home: GamePage(),
     );
   }
 }
