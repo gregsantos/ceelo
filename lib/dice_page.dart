@@ -207,25 +207,27 @@ class _DicePageState extends State<DicePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[400],
-      appBar: AppBar(
+/*       appBar: AppBar(
         title: Text('Shooter: ${_dicePosition + 1}  ---  Point: $_point'),
-      ),
-      body: GestureDetector(
-        onTap: () => _rollEm(),
-        child: LayoutBuilder(builder: (BuildContext context, constrain) {
-          scaffoldContext = context;
-          if (constrain.maxWidth < 400) {
-            return Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[...buildDice(_die1, _die2, _die3)]);
-          } else {
-            return Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[...buildDice(_die1, _die2, _die3)]);
-          }
-        }),
+      ), */
+      body: SafeArea(
+        child: GestureDetector(
+          onTap: () => _rollEm(),
+          child: LayoutBuilder(builder: (BuildContext context, constrain) {
+            scaffoldContext = context;
+            if (constrain.maxWidth < 400) {
+              return Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[...buildDice(_die1, _die2, _die3)]);
+            } else {
+              return Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[...buildDice(_die1, _die2, _die3)]);
+            }
+          }),
+        ),
       ),
     );
   }
