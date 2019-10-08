@@ -1,20 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'dart:math';
+import 'dart:async';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'player_bar.dart';
 import 'build_dice.dart';
+import 'dice_background.dart';
 
-class DicePage extends StatefulWidget {
-  final int players;
-
-  DicePage({Key key, this.players = 4}) : super(key: key);
-
+class HomeView extends StatelessWidget {
   @override
-  _DicePageState createState() => _DicePageState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SlidingUpPanel(
+        minHeight: 110,
+        color: Colors.indigo[900],
+        slideDirection: SlideDirection.DOWN,
+        backdropEnabled: true,
+        collapsed: PlayerBar(),
+        panel: Center(
+          child: Switch(
+            value: true,
+            onChanged: null,
+          ),
+        ),
+        body: GameView(),
+      ),
+    );
+  }
 }
 
-class _DicePageState extends State<DicePage> {
+class GameView extends StatelessWidget {
+  final String backgroundImage = 'asphalt';
+
+  @override
+  Widget build(BuildContext context) {
+    return DiceView(
+      backgroundImage: backgroundImage,
+    );
+  }
+}
+
+class DiceView extends StatefulWidget {
+  DiceView({Key key, @required this.backgroundImage, this.players = 4})
+      : super(key: key);
+  final String backgroundImage;
+  final int players;
+
+  @override
+  createState() => _DiceViewState();
+}
+
+class _DiceViewState extends State<DiceView> {
   BuildContext scaffoldContext;
-  static final random = Random().nextInt(3) + 1;
   int _startingPosition = random;
   int _dicePosition = random;
   int _die1 = 4;
@@ -27,7 +64,9 @@ class _DicePageState extends State<DicePage> {
   bool _rollOff = false;
   String _msg = '';
   Function eq = const ListEquality().equals;
+  static final random = Random().nextInt(3) + 1;
 
+  /// Dice Logic
   void _headCrack() {
     setState(() {
       _pointPosition = [_dicePosition];
@@ -185,12 +224,25 @@ class _DicePageState extends State<DicePage> {
 
   void _rollEm() {
     setState(() {
-      _die1 = Random().nextInt(6) + 1;
-      _die2 = Random().nextInt(6) + 1;
-      _die3 = Random().nextInt(6) + 1;
       _roll = [_die1, _die2, _die3]..sort((a, b) => a.compareTo(b));
     });
     _scoreRoll();
+  }
+
+  void setDice() {
+    setState(() {
+      _die1 = Random().nextInt(6) + 1;
+      _die2 = Random().nextInt(6) + 1;
+      _die3 = Random().nextInt(6) + 1;
+    });
+  }
+
+  void handleDiceRoll() {
+    for (var i = Random().nextInt(9 - 3); i >= 1; i--) {
+      var wait = i * 100;
+      Timer(Duration(milliseconds: wait), () => setDice());
+    }
+    Timer(Duration(milliseconds: 500), () => _rollEm());
   }
 
   void _showSnackBar(String message) {
@@ -205,34 +257,43 @@ class _DicePageState extends State<DicePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[400],
-/*       appBar: AppBar(
-        title: Text('Shooter: ${_dicePosition + 1}  ---  Point: $_point'),
-      ), */
-      body: SafeArea(
-        child: GestureDetector(
-          onTap: () => _rollEm(),
-          child: LayoutBuilder(builder: (BuildContext context, constrain) {
-            scaffoldContext = context;
-            if (constrain.maxWidth < 400) {
-              return Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    ...buildDice(_die1, _die2, _die3, _dicePosition)
-                  ]);
-            } else {
-              return Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    ...buildDice(_die1, _die2, _die3, _dicePosition)
-                  ]);
-            }
-          }),
-        ),
+    scaffoldContext = context;
+    return GestureDetector(
+      onTap: () => handleDiceRoll(),
+      child: Stack(
+        children: [
+          DiceBackground(background: widget.backgroundImage),
+          SafeArea(child: Dice(_die1, _die2, _die3, _dicePosition))
+        ],
       ),
     );
+  }
+}
+
+class Dice extends StatelessWidget {
+  Dice(this._die1, this._die2, this._die3, this._dicePosition);
+  final int _die1;
+  final int _die2;
+  final int _die3;
+  final int _dicePosition;
+
+  @override
+  Widget build(BuildContext context) {
+    return OrientationBuilder(builder: (BuildContext context, orientation) {
+      var portrait = orientation == Orientation.portrait;
+      return Container(
+          child: Padding(
+        padding: const EdgeInsets.only(top: 100.0, bottom: 0.0),
+        child: (portrait)
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [...buildDice(_die1, _die2, _die3, _dicePosition)],
+              )
+            : Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [...buildDice(_die1, _die2, _die3, _dicePosition)],
+              ),
+      ));
+    });
   }
 }

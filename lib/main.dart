@@ -1,17 +1,26 @@
 import 'package:flutter/material.dart';
-// import 'dice_page.dart';
-import 'game_page.dart';
+import 'home_view.dart';
 import 'theme.dart';
 
-void main() => runApp(MyApp());
+Future<void> loadImage(bg) async {
+  return AssetImage(bg);
+}
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await loadImage('images/asphalt.jpg');
+  runApp(MyApp());
+}
+
+// void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Cee-lo',
-      theme: panelTheme,
-      home: GamePage(),
+      theme: gameTheme,
+      home: HomeView(),
     );
   }
 }
