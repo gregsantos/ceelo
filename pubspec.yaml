@@ -25,6 +25,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   scoped_model: ^1.0.1
   sliding_up_panel: ^0.3.6
+  flushbar: ^1.9.0
 
 dev_dependencies:
   flutter_test:

@@ -3,9 +3,11 @@ import 'package:collection/collection.dart';
 import 'dart:math';
 import 'dart:async';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:flushbar/flushbar.dart';
 import 'player_bar.dart';
-import 'build_dice.dart';
 import 'dice_background.dart';
+import 'dice_column.dart';
+import 'dice_row.dart';
 
 class HomeView extends StatelessWidget {
   @override
@@ -72,9 +74,8 @@ class _DiceViewState extends State<DiceView> {
       _pointPosition = [_dicePosition];
       _msg = 'HEAD CRACK! WINNER SHOOTER ${_dicePosition + 1}';
     });
-    print(_msg);
     _showSnackBar(_msg);
-    _resetPoint();
+    Timer(Duration(milliseconds: 2000), () => _resetPoint());
   }
 
   void _crapOut() {
@@ -83,7 +84,7 @@ class _DiceViewState extends State<DiceView> {
     });
     print('CRAP OUT');
     _showSnackBar(_msg);
-    _advanceDicePosition();
+    Timer(Duration(milliseconds: 2100), () => _advanceDicePosition());
   }
 
   void _resetPoint() {
@@ -109,7 +110,6 @@ class _DiceViewState extends State<DiceView> {
       _rollOff = false;
       _msg = 'Come out Roll! Shooter ${winnerPosition + 1}';
     });
-    print(_msg);
     _showSnackBar(_msg);
   }
 
@@ -131,8 +131,10 @@ class _DiceViewState extends State<DiceView> {
   void _checkWinner() {
     print('Checking Leaders $_pointPosition with $_point');
     if (_pointPosition.length == 1) {
+      String _winMsg =
+          _point > 99 ? "WINS with TRIP ${_point / 100}'" : "Wins with $_point";
       setState(() {
-        _msg = 'Shooter ${_pointPosition[0] + 1} Wins with $_point';
+        _msg = 'Shooter ${_pointPosition[0] + 1} $_winMsg';
       });
       print(_msg);
       _showSnackBar(_msg);
@@ -155,11 +157,12 @@ class _DiceViewState extends State<DiceView> {
             ? print("Shooter ${newDicePosition + 1} is in the roll off")
             : _advanceDicePosition();
       }
+      Timer(Duration(milliseconds: 2100),
+          () => _showSnackBar("Your roll shooter ${newDicePosition + 1}"));
     }
   }
 
   void _compareScore(shooter, score) {
-    print('Shooter: ${shooter + 1} | Score: $score | CurrentPoint: $_point');
     if (score == _point) {
       setState(() {
         _pointPosition.add(_dicePosition);
@@ -170,18 +173,16 @@ class _DiceViewState extends State<DiceView> {
     }
     if (score < _point) {
       setState(() {
-        _msg = 'NOT GONE CUT IT Shooter ${shooter + 1}';
+        _msg = "NOT GONE CUT IT Shooter ${shooter + 1}! Next Shooter!";
       });
-      print(_msg);
       _showSnackBar(_msg);
     }
     if (score > _point) {
       setState(() {
         _point = score;
         _pointPosition = [_dicePosition];
-        _msg = 'YOU DA MAN Shooter ${shooter + 1}';
+        _msg = 'Point is $_point! YOU DA MAN Shooter ${shooter + 1}';
       });
-      print(_msg);
       _showSnackBar(_msg);
     }
     _advanceDicePosition();
@@ -208,13 +209,11 @@ class _DiceViewState extends State<DiceView> {
       setState(() {
         _msg = 'YOU ROLLED $scoreDelta';
       });
-      print(_msg);
       _showSnackBar(_msg);
     } else {
       setState(() {
-        _msg = 'Roll again!';
+        _msg = 'No dice Baby! Roll again!';
       });
-      print('Roll again!');
       _showSnackBar(_msg);
     }
     if (scoreDelta != null) {
@@ -222,14 +221,14 @@ class _DiceViewState extends State<DiceView> {
     }
   }
 
-  void _rollEm() {
+  void _scoreDice() {
     setState(() {
       _roll = [_die1, _die2, _die3]..sort((a, b) => a.compareTo(b));
     });
     _scoreRoll();
   }
 
-  void setDice() {
+  void _setDice() {
     setState(() {
       _die1 = Random().nextInt(6) + 1;
       _die2 = Random().nextInt(6) + 1;
@@ -237,22 +236,34 @@ class _DiceViewState extends State<DiceView> {
     });
   }
 
-  void handleDiceRoll() {
-    for (var i = Random().nextInt(9 - 3); i >= 1; i--) {
-      var wait = i * 100;
-      Timer(Duration(milliseconds: wait), () => setDice());
+  Future<void> shakeDice() {
+    // Imagine that this function is
+    // more complex and slow.
+    int random = Random().nextInt((9 - 3) + 3);
+    for (var i = random; i >= 1; i--) {
+      var wait = Random().nextInt(5) * 100;
+      Timer(Duration(milliseconds: wait), () => _setDice());
     }
-    Timer(Duration(milliseconds: 500), () => _rollEm());
+    return Future.delayed(Duration(milliseconds: 1500), () => {});
+  }
+
+  void handleDiceRoll() async {
+    await shakeDice();
+    _scoreDice();
   }
 
   void _showSnackBar(String message) {
-    final snackBar = SnackBar(
+/*     final snackBar = SnackBar(
       content: Text(message),
       backgroundColor: Colors.indigo,
       duration: Duration(seconds: 1),
     );
-    // Find the Scaffold in the Widget tree and use it to show a SnackBar!
-    Scaffold.of(scaffoldContext).showSnackBar(snackBar);
+    Scaffold.of(scaffoldContext).showSnackBar(snackBar); */
+    Flushbar(
+      title: "Shooter ${_dicePosition + 1}",
+      message: "$message",
+      duration: Duration(seconds: 2),
+    )..show(scaffoldContext);
   }
 
   @override
@@ -262,8 +273,10 @@ class _DiceViewState extends State<DiceView> {
       onTap: () => handleDiceRoll(),
       child: Stack(
         children: [
-          DiceBackground(background: widget.backgroundImage),
-          SafeArea(child: Dice(_die1, _die2, _die3, _dicePosition))
+          DiceBackground(background: widget.backgroundImage, point: _point),
+          SafeArea(
+            child: Dice(_die1, _die2, _die3, _dicePosition),
+          )
         ],
       ),
     );
@@ -284,15 +297,11 @@ class Dice extends StatelessWidget {
       return Container(
           child: Padding(
         padding: const EdgeInsets.only(top: 100.0, bottom: 0.0),
-        child: (portrait)
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [...buildDice(_die1, _die2, _die3, _dicePosition)],
-              )
-            : Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [...buildDice(_die1, _die2, _die3, _dicePosition)],
-              ),
+        child: Center(
+          child: (portrait)
+              ? DiceColumn(_die1, _die2, _die3)
+              : DiceRow(_die1, _die2, _die3),
+        ),
       ));
     });
   }
