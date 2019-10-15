@@ -7,6 +7,7 @@ import 'player_bar.dart';
 import 'dice_background.dart';
 import 'dice_column.dart';
 import 'dice_row.dart';
+import 'utils/player_color.dart';
 
 class HomeView extends StatelessWidget {
   @override
@@ -85,20 +86,6 @@ class _DiceViewState extends State<DiceView> {
     _advanceDicePosition();
   }
 
-/*   void _resetPoint() {
-    int dicePosition = _rollOff ? _rollOffQueue[0] : _pointPosition[0];
-    String msg =
-        _rollOff ? 'Roll Off Come Out' : 'Come out Roll ${dicePosition + 1}!';
-    setState(() {
-      _dicePosition = dicePosition;
-      _startingPosition = dicePosition;
-      _point = 0;
-      _pointPosition = [];
-      _msg = msg;
-    });
-    _showSnackBar(_msg);
-  } */
-
   void _resetWinner() {
     int winnerPosition = _pointPosition[0];
     setState(() {
@@ -142,10 +129,8 @@ class _DiceViewState extends State<DiceView> {
   }
 
   void _advanceDicePosition() {
-    int newDicePosition = (_dicePosition == 3) ? 0 : ++_dicePosition;
-/*     setState(() {
-      _dicePosition = newDicePosition;
-    }); */
+    int newDicePosition =
+        (_dicePosition == widget.players - 1) ? 0 : ++_dicePosition;
     if (newDicePosition == _startingPosition) {
       _checkWinner();
     } else {
@@ -173,7 +158,8 @@ class _DiceViewState extends State<DiceView> {
     }
     if (score < _point) {
       setState(() {
-        _msg = "NOT GONE CUT IT Shooter ${dicePosition + 1}!";
+        _msg =
+            "NOT GONE CUT IT Shooter ${dicePosition + 1}!\nPoint is still $_point";
       });
       _showSnackBar(_msg);
     }
@@ -227,21 +213,6 @@ class _DiceViewState extends State<DiceView> {
     }
   }
 
-/*   void _scoreDice(List roll) {
-    setState(() {
-      _roll = roll..sort((a, b) => a.compareTo(b));
-    });
-    _scoreRoll();
-  } */
-
-/*   void _setDice() {
-    setState(() {
-      _die1 = Random().nextInt(6) + 1;
-      _die2 = Random().nextInt(6) + 1;
-      _die3 = Random().nextInt(6) + 1;
-    });
-  } */
-
   void _setDie1() {
     int wait = Random().nextInt((7 - 4) + 4) * 100;
     Timer(
@@ -273,7 +244,7 @@ class _DiceViewState extends State<DiceView> {
   }
 
   Future<List> rollDice() {
-    int random = Random().nextInt(9 - 4) + 4;
+    int random = Random().nextInt(15 - 5) + 5;
     for (var i = random; i >= 1; i--) {
       _setDie1();
       _setDie2();
@@ -294,15 +265,10 @@ class _DiceViewState extends State<DiceView> {
   void _showSnackBar(String message) {
     final snackBar = SnackBar(
       content: Text(message),
-      backgroundColor: Colors.indigo,
+      backgroundColor: Colors.indigo[800],
       duration: Duration(seconds: 2),
     );
     Scaffold.of(scaffoldContext).showSnackBar(snackBar);
-    /* Flushbar(
-      title: "Shooter ${_dicePosition + 1}",
-      message: "$message",
-      duration: Duration(seconds: 2),
-    )..show(scaffoldContext); */
   }
 
   @override
@@ -313,12 +279,58 @@ class _DiceViewState extends State<DiceView> {
       child: Stack(
         children: [
           DiceBackground(
-              background: widget.backgroundImage,
-              point: _point,
-              shooter: _dicePosition),
+            background: widget.backgroundImage,
+          ),
           SafeArea(
             child: Dice(_die1, _die2, _die3, _dicePosition),
-          )
+          ),
+          Positioned(
+            bottom: 40.0,
+            left: 20.0,
+            child: Column(
+              children: <Widget>[
+                Text(
+                  "${_dicePosition + 1}",
+                  style: TextStyle(
+                      color: getPositionColor(_dicePosition),
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  "Shooter",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 40.0,
+            right: 20.0,
+            child: Column(
+              children: <Widget>[
+                Text(
+                  _point > 99
+                      ? "${(_point / 100).toStringAsFixed(0)} ${(_point / 100).toStringAsFixed(0)} ${(_point / 100).toStringAsFixed(0)}"
+                      : "$_point",
+                  style: TextStyle(
+                      color: getPointColor(
+                          _pointPosition.length == 0 ? 9 : _pointPosition[0]),
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  "Point",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
