@@ -12,7 +12,6 @@ Color getPositionColor(dicePosition) {
 }
 
 Color getPointColor(pointPosition) {
-  print("ponint posish $pointPosition");
   if (pointPosition == 0) {
     return Colors.pink;
   } else if (pointPosition == 1) {

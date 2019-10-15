@@ -40,7 +40,6 @@ class DiceColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('$_die1,$_die2,$_die3');
     return Column(
       children: [getDie(_die1), getDie(_die2), getDie(_die3)],
     );
