@@ -1,33 +1,59 @@
 import 'package:flutter/material.dart';
 
 class SettingsPanel extends StatelessWidget {
-  SettingsPanel(this.switchValue, this.updateSwitch);
-  final bool switchValue;
-  final updateSwitch;
+  SettingsPanel(this.isSelected, this.handleSelected);
+  final List<bool> isSelected;
+  final handleSelected;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+    return Padding(
+      padding: const EdgeInsets.only(top: 80.0),
+      child: Column(
         children: <Widget>[
-          Text(
-            "Street",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Switch(
-              value: switchValue,
-              onChanged: (bool newValue) => updateSwitch(),
-            ),
-          ),
-          Text(
-            "Casino",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ToggleButtons(
+            children: <Widget>[
+              //Icon(Icons.ac_unit),
+              Text(
+                "Street",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold),
+              ),
+              Text(
+                "Casino",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold),
+              ),
+            ],
+            onPressed: (int index) => handleSelected(index),
+            isSelected: isSelected,
           ),
         ],
       ),
     );
   }
 }
+
+/* ToggleButtons(
+  children: <Widget>[
+    Icon(Icons.ac_unit),
+    Icon(Icons.call),
+    Icon(Icons.cake),
+  ],
+  onPressed: (int index) {
+    setState(() {
+      for (int buttonIndex = 0; buttonIndex < isSelected.length; buttonIndex++) {
+        if (buttonIndex == index) {
+          isSelected[buttonIndex] = true;
+        } else {
+          isSelected[buttonIndex] = false;
+        }
+      }
+    });
+  },
+  isSelected: isSelected,
+), */

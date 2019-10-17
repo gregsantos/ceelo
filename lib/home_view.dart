@@ -17,13 +17,7 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  bool switchValue = false;
-
-  updateSwitch() {
-    setState(() {
-      switchValue = !switchValue;
-    });
-  }
+  List<bool> isSelected = [true, false];
 
   @override
   void initState() {
@@ -33,18 +27,33 @@ class _HomeViewState extends State<HomeView> {
     super.initState();
   }
 
+  handleSelected(int index) {
+    setState(() {
+      for (int buttonIndex = 0;
+          buttonIndex < isSelected.length;
+          buttonIndex++) {
+        if (buttonIndex == index) {
+          isSelected[buttonIndex] = true;
+        } else {
+          isSelected[buttonIndex] = false;
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SlidingUpPanel(
         minHeight: 100,
+        maxHeight: 200,
         color: Colors.indigo[900],
         slideDirection: SlideDirection.DOWN,
         backdropEnabled: true,
         collapsed: PlayerBar(),
-        panel: SettingsPanel(switchValue, updateSwitch),
+        panel: SettingsPanel(isSelected, handleSelected),
         body: SafeArea(
-            child: GameView(background: switchValue ? 'felt' : 'asphalt')),
+            child: GameView(background: isSelected[0] ? 'asphalt' : 'felt')),
       ),
     );
   }
@@ -292,12 +301,10 @@ class _GameViewState extends State<GameView> {
             left: 20.0,
             child: Column(
               children: <Widget>[
-                Text(
-                  "${_dicePosition + 1}",
-                  style: TextStyle(
-                      color: getPositionColor(_dicePosition),
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold),
+                Icon(
+                  Icons.adjust,
+                  size: 60.0,
+                  color: getPointColor(_dicePosition),
                 ),
                 Text(
                   "Shooter",
