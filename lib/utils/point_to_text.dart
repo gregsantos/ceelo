@@ -1,10 +1,9 @@
 String pointToText(int point) {
-  String score = '';
-
+  String score;
   if (point > 99) {
-    score = "Trip ${(point / 100).toStringAsFixed(0)}'s";
+    score = "Trip\n  ${(point / 100).toStringAsFixed(0)}";
+  } else {
+    score = point.toStringAsFixed(0);
   }
-
-  score = "$point";
   return score;
 }
