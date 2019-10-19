@@ -40,9 +40,13 @@ class DiceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [getDie(_die1), getDie(_die2), getDie(_die3)],
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.only(left: 40.0),
+        child: Row(
+          children: [getDie(_die1), getDie(_die2), getDie(_die3)],
+        ),
+      ),
     );
   }
 }

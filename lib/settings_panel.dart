@@ -13,7 +13,6 @@ class SettingsPanel extends StatelessWidget {
         children: <Widget>[
           ToggleButtons(
             children: <Widget>[
-              //Icon(Icons.ac_unit),
               Text(
                 "Street",
                 style: TextStyle(
@@ -37,23 +36,3 @@ class SettingsPanel extends StatelessWidget {
     );
   }
 }
-
-/* ToggleButtons(
-  children: <Widget>[
-    Icon(Icons.ac_unit),
-    Icon(Icons.call),
-    Icon(Icons.cake),
-  ],
-  onPressed: (int index) {
-    setState(() {
-      for (int buttonIndex = 0; buttonIndex < isSelected.length; buttonIndex++) {
-        if (buttonIndex == index) {
-          isSelected[buttonIndex] = true;
-        } else {
-          isSelected[buttonIndex] = false;
-        }
-      }
-    });
-  },
-  isSelected: isSelected,
-), */

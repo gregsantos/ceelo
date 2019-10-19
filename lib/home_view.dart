@@ -27,7 +27,7 @@ class _HomeViewState extends State<HomeView> {
     super.initState();
   }
 
-  handleSelected(int index) {
+  void handleSelected(int index) {
     setState(() {
       for (int buttonIndex = 0;
           buttonIndex < isSelected.length;
@@ -45,16 +45,14 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SlidingUpPanel(
-        minHeight: 100,
-        maxHeight: 200,
-        color: Colors.indigo[900],
-        slideDirection: SlideDirection.DOWN,
-        backdropEnabled: true,
-        collapsed: PlayerBar(),
-        panel: SettingsPanel(isSelected, handleSelected),
-        body: SafeArea(
-            child: GameView(background: isSelected[0] ? 'asphalt' : 'felt')),
-      ),
+          minHeight: 100,
+          maxHeight: 200,
+          color: Colors.indigo[900],
+          slideDirection: SlideDirection.DOWN,
+          backdropEnabled: true,
+          collapsed: PlayerBar(),
+          panel: SettingsPanel(isSelected, handleSelected),
+          body: GameView(background: isSelected[0] ? 'asphalt' : 'felt')),
     );
   }
 }
@@ -297,46 +295,55 @@ class _GameViewState extends State<GameView> {
           ),
           Dice(_die1, _die2, _die3),
           Positioned(
-            bottom: 40.0,
+            bottom: 10.0,
             left: 20.0,
-            child: Column(
-              children: <Widget>[
-                Icon(
-                  Icons.adjust,
-                  size: 60.0,
-                  color: getPointColor(_dicePosition),
+            child: SafeArea(
+              child: Container(
+                child: Column(
+                  children: <Widget>[
+                    Icon(
+                      Icons.adjust,
+                      size: 60.0,
+                      color: getPointColor(_dicePosition),
+                    ),
+                    Text(
+                      "Shooter",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
-                Text(
-                  "Shooter",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
+              ),
             ),
           ),
           Positioned(
-            bottom: 40.0,
+            bottom: 10.0,
             right: 20.0,
-            child: Column(
-              children: <Widget>[
-                Text(
-                  pointToText(_point),
-                  style: TextStyle(
-                      color: getPointColor(
-                          _pointPosition.length == 0 ? 9 : _pointPosition[0]),
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold),
+            child: SafeArea(
+              child: Container(
+                child: Column(
+                  children: <Widget>[
+                    Text(
+                      pointToText(_point),
+                      style: TextStyle(
+                          color: getPointColor(_pointPosition.length == 0
+                              ? 9
+                              : _pointPosition[0]),
+                          fontSize: 48,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      "Point",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
-                Text(
-                  "Point",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
+              ),
             ),
           ),
         ],

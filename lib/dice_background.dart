@@ -21,10 +21,3 @@ class DiceBackground extends StatelessWidget {
     );
   }
 }
-
-/* FadeInImage.assetNetwork(
-    placeholder: kTransparentImage,
-    image: "images/$background.jpg",
-    fit: BoxFit.cover,
-  ),
-); */

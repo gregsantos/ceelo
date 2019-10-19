@@ -13,14 +13,12 @@ class Dice extends StatelessWidget {
     return OrientationBuilder(builder: (BuildContext context, orientation) {
       var portrait = orientation == Orientation.portrait;
       return Container(
-          child: Padding(
-        padding: const EdgeInsets.only(top: 100.0, bottom: 0.0),
         child: Center(
           child: (portrait)
               ? DiceColumn(_die1, _die2, _die3)
               : DiceRow(_die1, _die2, _die3),
         ),
-      ));
+      );
     });
   }
 }
