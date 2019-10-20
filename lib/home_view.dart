@@ -92,7 +92,6 @@ class _GameViewState extends State<GameView> {
       _msg = "HEAD CRACK!";
     });
     showEndGameDialog(context, winner, _msg);
-    // _resetWinner();
   }
 
   void _crapOut() {
@@ -113,35 +112,7 @@ class _GameViewState extends State<GameView> {
       _pointPosition = [];
       _rollOff = false;
       _rollOffQueue = [];
-      _msg = 'New Come out Roll Shooter ${winnerPosition + 1}!';
     });
-  }
-
-  void showEndGameDialog(context, winner, msg) async {
-    int winnerCome = await showDialog(
-      context: context,
-      builder: (BuildContext context) => CustomDialog(
-        title: msg,
-        winner: winner,
-        description: "Shooter $winner takes the cake",
-        buttonText: "New Game",
-      ),
-    );
-    _resetWinner(winnerCome);
-  }
-
-  void showRollOffDialog(context, players) async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) => CustomDialog(
-        title: "ROLL OFF!",
-        winner: 0,
-        description:
-            "Double down and roll again!\nPlayers ${players.map((player) => player)}",
-        buttonText: "Start Roll Off",
-      ),
-    );
-    _resetRollOff();
   }
 
   void _resetRollOff() {
@@ -158,22 +129,45 @@ class _GameViewState extends State<GameView> {
   void _checkWinner() {
     if (_pointPosition.length == 1) {
       int winner = _pointPosition[0] + 1;
-      String _winMsg =
-          _point > 99 ? "WINNER TRIP $_die1\'s'" : "WINNER $_point";
-      setState(() {
-        _msg = _winMsg;
-      });
+      String winMsg = "WINNER ${pointToText(_point)}";
       // end game
-      showEndGameDialog(context, winner, _winMsg);
+      showEndGameDialog(context, winner, winMsg);
     } else {
       showRollOffDialog(context, _rollOffQueue);
     }
   }
 
+  void showEndGameDialog(context, winner, winMsg) async {
+    int winnerCome = await showDialog(
+      context: context,
+      builder: (BuildContext context) => CustomDialog(
+        title: winMsg,
+        winner: winner,
+        description: "Shooter $winner takes the cake",
+        buttonText: "Play again",
+      ),
+    );
+    _resetWinner(winnerCome);
+  }
+
+  void showRollOffDialog(context, players) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) => CustomDialog(
+        title: "ROLL OFF!",
+        winner: 0,
+        description:
+            "Double down and roll again!\nPlayers ${players.map((player) => player)}",
+        buttonText: "Roll Off",
+      ),
+    );
+    _resetRollOff();
+  }
+
   void _advanceDicePosition() {
     int newDicePosition = (_dicePosition == players - 1) ? 0 : ++_dicePosition;
     if (newDicePosition == _startingPosition) {
-      Timer(Duration(milliseconds: 1000), () => _checkWinner());
+      Timer(Duration(milliseconds: 500), () => _checkWinner());
     } else {
       setState(() {
         _dicePosition = newDicePosition;
@@ -195,13 +189,12 @@ class _GameViewState extends State<GameView> {
         _pointPosition.add(dicePosition);
         _msg = 'ROLL OFF at ${pointToText(_point)}';
       });
-      _showSnackBar(_msg);
     }
     if (score < _point) {
       setState(() {
         _msg = "NOT GONE CUT IT Shooter ${dicePosition + 1}!";
       });
-      _showSnackBar(_msg);
+      // _showSnackBar(_msg);
     }
     if (score > _point) {
       setState(() {
@@ -211,14 +204,14 @@ class _GameViewState extends State<GameView> {
             ? "Shooter ${dicePosition + 1}'s Da Man wit TRIP $_die1's"
             : "Ok Shooter ${dicePosition + 1} You got the Point with $_point";
       });
-      _showSnackBar(_msg);
+      // _showSnackBar(_msg);
     }
-    _advanceDicePosition();
+    _showSnackBar(_msg);
+    Timer(Duration(milliseconds: 1500), () => _advanceDicePosition());
   }
 
   void _scoreRoll(List roll) {
     int scoreDelta;
-    int shooter = _dicePosition + 1;
     bool headcrack = eq(roll, [4, 5, 6]);
     bool crappedOut = eq(roll, [1, 2, 3]);
     if (headcrack) {
@@ -228,18 +221,10 @@ class _GameViewState extends State<GameView> {
     } else if (_die1 == _die2 && _die1 == _die3) {
       // Rolled Trips
       scoreDelta = _die1 * 100;
-      setState(() {
-        _msg = 'Shooter $shooter ROLLED TRIP $_die1\'s';
-      });
-      _showSnackBar(_msg);
     } else if (_die1 == _die2 || _die1 == _die3 || _die2 == _die3) {
       // Rolled a point
       int point = (roll[0] == roll[1]) ? roll[2] : roll[0];
       scoreDelta = point * 1;
-      setState(() {
-        _msg = 'Shooter $shooter rolled $scoreDelta';
-      });
-      _showSnackBar(_msg);
     } else {
       // rolled shit
       setState(() {
@@ -305,7 +290,7 @@ class _GameViewState extends State<GameView> {
     final snackBar = SnackBar(
       content: Text(message),
       backgroundColor: Colors.indigo[800],
-      duration: Duration(milliseconds: 1500),
+      duration: Duration(milliseconds: 1000),
     );
     Scaffold.of(scaffoldContext).showSnackBar(snackBar);
   }
