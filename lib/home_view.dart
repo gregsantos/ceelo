@@ -10,6 +10,7 @@ import 'dice.dart';
 import 'utils/player_color.dart';
 import 'settings_panel.dart';
 import 'utils/point_to_text.dart';
+import 'dialog.dart';
 
 class HomeView extends StatefulWidget {
   @override
@@ -85,12 +86,13 @@ class _GameViewState extends State<GameView> {
 
   /// Dice Logic
   void _headCrack() {
+    int winner = _dicePosition + 1;
     setState(() {
       _pointPosition = [_dicePosition];
-      _msg = 'HEAD CRACK! Shooter ${_dicePosition + 1} TAKES THE CAKE';
+      _msg = "HEAD CRACK!";
     });
-    _showSnackBar(_msg);
-    _resetWinner();
+    showEndGameDialog(context, winner, _msg);
+    // _resetWinner();
   }
 
   void _crapOut() {
@@ -101,7 +103,8 @@ class _GameViewState extends State<GameView> {
     _advanceDicePosition();
   }
 
-  void _resetWinner() {
+  void _resetWinner(winnerCome) {
+    print('$winnerCome');
     int winnerPosition = _pointPosition[0];
     setState(() {
       _dicePosition = winnerPosition;
@@ -112,7 +115,33 @@ class _GameViewState extends State<GameView> {
       _rollOffQueue = [];
       _msg = 'New Come out Roll Shooter ${winnerPosition + 1}!';
     });
-    _showSnackBar(_msg);
+  }
+
+  void showEndGameDialog(context, winner, msg) async {
+    int winnerCome = await showDialog(
+      context: context,
+      builder: (BuildContext context) => CustomDialog(
+        title: msg,
+        winner: winner,
+        description: "Shooter $winner takes the cake",
+        buttonText: "New Game",
+      ),
+    );
+    _resetWinner(winnerCome);
+  }
+
+  void showRollOffDialog(context, players) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) => CustomDialog(
+        title: "ROLL OFF!",
+        winner: 0,
+        description:
+            "Double down and roll again!\nPlayers ${players.map((player) => player)}",
+        buttonText: "Start Roll Off",
+      ),
+    );
+    _resetRollOff();
   }
 
   void _resetRollOff() {
@@ -123,29 +152,28 @@ class _GameViewState extends State<GameView> {
       _startingPosition = _pointPosition[0];
       _dicePosition = _pointPosition[0];
       _pointPosition = [];
-      _msg = 'ROLL OFF Come Out! Your up Shooter ${_startingPosition + 1}!';
     });
-    _showSnackBar(_msg);
   }
 
   void _checkWinner() {
     if (_pointPosition.length == 1) {
+      int winner = _pointPosition[0] + 1;
       String _winMsg =
-          _point > 99 ? "WINS with TRIP $_die1\'s'" : "Wins with $_point";
+          _point > 99 ? "WINNER TRIP $_die1\'s'" : "WINNER $_point";
       setState(() {
-        _msg = 'Shooter ${_pointPosition[0] + 1} $_winMsg';
+        _msg = _winMsg;
       });
-      _showSnackBar(_msg);
-      _resetWinner();
+      // end game
+      showEndGameDialog(context, winner, _winMsg);
     } else {
-      _resetRollOff();
+      showRollOffDialog(context, _rollOffQueue);
     }
   }
 
   void _advanceDicePosition() {
     int newDicePosition = (_dicePosition == players - 1) ? 0 : ++_dicePosition;
     if (newDicePosition == _startingPosition) {
-      _checkWinner();
+      Timer(Duration(milliseconds: 1000), () => _checkWinner());
     } else {
       setState(() {
         _dicePosition = newDicePosition;
@@ -171,8 +199,7 @@ class _GameViewState extends State<GameView> {
     }
     if (score < _point) {
       setState(() {
-        _msg =
-            "NOT GONE CUT IT Shooter ${dicePosition + 1}!\nPoint is still ${pointToText(_point)}";
+        _msg = "NOT GONE CUT IT Shooter ${dicePosition + 1}!";
       });
       _showSnackBar(_msg);
     }
@@ -181,7 +208,7 @@ class _GameViewState extends State<GameView> {
         _point = score;
         _pointPosition = [dicePosition];
         _msg = _point > 99
-            ? "Shooter ${dicePosition + 1} Da Man wit TRIP $_die1\'s"
+            ? "Shooter ${dicePosition + 1}'s Da Man wit TRIP $_die1's"
             : "Ok Shooter ${dicePosition + 1} You got the Point with $_point";
       });
       _showSnackBar(_msg);
@@ -189,10 +216,9 @@ class _GameViewState extends State<GameView> {
     _advanceDicePosition();
   }
 
-  void _scoreRoll() {
+  void _scoreRoll(List roll) {
     int scoreDelta;
     int shooter = _dicePosition + 1;
-    List roll = _roll;
     bool headcrack = eq(roll, [4, 5, 6]);
     bool crappedOut = eq(roll, [1, 2, 3]);
     if (headcrack) {
@@ -211,10 +237,11 @@ class _GameViewState extends State<GameView> {
       int point = (roll[0] == roll[1]) ? roll[2] : roll[0];
       scoreDelta = point * 1;
       setState(() {
-        _msg = 'YOU ROLLED $scoreDelta';
+        _msg = 'Shooter $shooter rolled $scoreDelta';
       });
       _showSnackBar(_msg);
     } else {
+      // rolled shit
       setState(() {
         _msg = 'No dice Baby!\nRoll again!';
       });
@@ -271,14 +298,14 @@ class _GameViewState extends State<GameView> {
     setState(() {
       _roll = roll;
     });
-    _scoreRoll();
+    _scoreRoll(roll);
   }
 
   void _showSnackBar(String message) {
     final snackBar = SnackBar(
       content: Text(message),
       backgroundColor: Colors.indigo[800],
-      duration: Duration(seconds: 2),
+      duration: Duration(milliseconds: 1500),
     );
     Scaffold.of(scaffoldContext).showSnackBar(snackBar);
   }
