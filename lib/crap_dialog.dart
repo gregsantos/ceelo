@@ -1,16 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
-class CustomDialog extends StatelessWidget {
-  final String title, description, buttonText;
-  final int winner;
-  final Image image;
+class CrapDialog extends StatelessWidget {
+  final int shooter;
+  final String title;
+  final String description;
 
-  CustomDialog({
+  CrapDialog({
+    @required this.shooter,
     @required this.title,
     @required this.description,
-    @required this.buttonText,
-    this.winner,
-    this.image,
   });
 
   dialogContent(BuildContext context) {
@@ -40,7 +40,7 @@ class CustomDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min, // To make the card compact
             children: <Widget>[
               Text(
-                title,
+                '$title',
                 style: TextStyle(
                   fontSize: 24.0,
                   fontWeight: FontWeight.w700,
@@ -48,7 +48,7 @@ class CustomDialog extends StatelessWidget {
               ),
               SizedBox(height: 16.0),
               Text(
-                description,
+                '$description',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16.0,
@@ -59,9 +59,9 @@ class CustomDialog extends StatelessWidget {
                 alignment: Alignment.bottomRight,
                 child: FlatButton(
                   onPressed: () {
-                    Navigator.of(context).pop(winner); // To close the dialog
+                    Navigator.of(context).pop(shooter); // To close the dialog
                   },
-                  child: Text(buttonText),
+                  child: Text('Close'),
                 ),
               ),
             ],
@@ -82,6 +82,10 @@ class CustomDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Timer(
+      Duration(milliseconds: 1500),
+      () => Navigator.of(context).pop(shooter),
+    );
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(Consts.padding),

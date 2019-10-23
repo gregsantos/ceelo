@@ -11,6 +11,7 @@ import 'utils/player_color.dart';
 import 'settings_panel.dart';
 import 'utils/point_to_text.dart';
 import 'dialog.dart';
+import 'crap_dialog.dart';
 
 class HomeView extends StatefulWidget {
   @override
@@ -77,7 +78,7 @@ class _GameViewState extends State<GameView> {
   int _die2 = 5;
   int _die3 = 6;
   int _point = 0;
-  List _roll = [];
+  // List _roll = [];
   List _pointPosition = [];
   List _rollOffQueue = [];
   bool _rollOff = false;
@@ -89,21 +90,43 @@ class _GameViewState extends State<GameView> {
     int winner = _dicePosition + 1;
     setState(() {
       _pointPosition = [_dicePosition];
-      _msg = "HEAD CRACK!";
+      _msg = "HEAD CRACK! 4, 5, 6";
     });
-    showEndGameDialog(context, winner, _msg);
+    _showEndGameDialog(context, winner, _msg);
   }
 
-  void _crapOut() {
+  void _crapOut() async {
     setState(() {
-      _msg = "See ya Shooter ${_dicePosition + 1} YOU CAUGHT AN L!";
+      _msg = "SEE YA!!!";
     });
-    _showSnackBar(_msg);
+    // crap dialog future
+    int crapper = await showDialog(
+      context: context,
+      builder: (BuildContext context) => CrapDialog(
+        shooter: _dicePosition,
+        title: _msg,
+        description: "Shooter ${_dicePosition + 1}\nYOU CAUGHT AN L!",
+      ),
+    );
+    print("Crapper: $crapper");
     _advanceDicePosition();
   }
 
+  Future<int> _rollGarbage() async {
+    setState(() {
+      _msg = "No dice Shooter ${_dicePosition + 1}";
+    });
+    // crap dialog future
+    int crapper = await showDialog(
+      context: context,
+      builder: (BuildContext context) => CrapDialog(
+          shooter: _dicePosition, title: _msg, description: "ROLL AGAIN!"),
+    );
+    print("$crapper");
+    return crapper;
+  }
+
   void _resetWinner(winnerCome) {
-    print('$winnerCome');
     int winnerPosition = _pointPosition[0];
     setState(() {
       _dicePosition = winnerPosition;
@@ -129,36 +152,38 @@ class _GameViewState extends State<GameView> {
   void _checkWinner() {
     if (_pointPosition.length == 1) {
       int winner = _pointPosition[0] + 1;
-      String winMsg = "WINNER ${pointToText(_point)}";
+      String winPoint = "${pointToText(_point)}";
       // end game
-      showEndGameDialog(context, winner, winMsg);
+      _showEndGameDialog(context, winner, winPoint);
     } else {
-      showRollOffDialog(context, _rollOffQueue);
+      // roll off
+      _showRollOffDialog(context, _rollOffQueue);
     }
   }
 
-  void showEndGameDialog(context, winner, winMsg) async {
+  void _showEndGameDialog(context, winner, winPoint) async {
     int winnerCome = await showDialog(
       context: context,
       builder: (BuildContext context) => CustomDialog(
-        title: winMsg,
+        title: "Winner Shooter $winner",
         winner: winner,
-        description: "Shooter $winner takes the cake",
+        description: "Shooter $winner takes the cake\nwith $winPoint",
         buttonText: "Play again",
       ),
     );
+    print("Winner: $winnerCome");
     _resetWinner(winnerCome);
   }
 
-  void showRollOffDialog(context, players) async {
+  void _showRollOffDialog(context, players) async {
     await showDialog(
       context: context,
       builder: (BuildContext context) => CustomDialog(
         title: "ROLL OFF!",
-        winner: 0,
-        description:
-            "Double down and roll again!\nPlayers ${players.map((player) => player)}",
-        buttonText: "Roll Off",
+        description: "Double down and roll again!\nPlayers ${players.map((p) {
+          return p;
+        })}",
+        buttonText: "Start Roll Off",
       ),
     );
     _resetRollOff();
@@ -167,7 +192,8 @@ class _GameViewState extends State<GameView> {
   void _advanceDicePosition() {
     int newDicePosition = (_dicePosition == players - 1) ? 0 : ++_dicePosition;
     if (newDicePosition == _startingPosition) {
-      Timer(Duration(milliseconds: 500), () => _checkWinner());
+      //Timer(Duration(milliseconds: 500), () => _checkWinner());
+      _checkWinner();
     } else {
       setState(() {
         _dicePosition = newDicePosition;
@@ -183,7 +209,7 @@ class _GameViewState extends State<GameView> {
     }
   }
 
-  void _compareScore(dicePosition, score) {
+  void _compareScore(dicePosition, score) async {
     if (score == _point) {
       setState(() {
         _pointPosition.add(dicePosition);
@@ -194,7 +220,6 @@ class _GameViewState extends State<GameView> {
       setState(() {
         _msg = "NOT GONE CUT IT Shooter ${dicePosition + 1}!";
       });
-      // _showSnackBar(_msg);
     }
     if (score > _point) {
       setState(() {
@@ -204,13 +229,13 @@ class _GameViewState extends State<GameView> {
             ? "Shooter ${dicePosition + 1}'s Da Man wit TRIP $_die1's"
             : "Ok Shooter ${dicePosition + 1} You got the Point with $_point";
       });
-      // _showSnackBar(_msg);
     }
-    _showSnackBar(_msg);
-    Timer(Duration(milliseconds: 1500), () => _advanceDicePosition());
+    await _showSnackBar(_msg);
+    _advanceDicePosition();
+    //Timer(Duration(milliseconds: 1500), () => _advanceDicePosition());
   }
 
-  void _scoreRoll(List roll) {
+  void _scoreRoll(List roll) async {
     int scoreDelta;
     bool headcrack = eq(roll, [4, 5, 6]);
     bool crappedOut = eq(roll, [1, 2, 3]);
@@ -226,11 +251,8 @@ class _GameViewState extends State<GameView> {
       int point = (roll[0] == roll[1]) ? roll[2] : roll[0];
       scoreDelta = point * 1;
     } else {
-      // rolled shit
-      setState(() {
-        _msg = 'No dice Baby!\nRoll again!';
-      });
-      _showSnackBar(_msg);
+      // rolled garbage
+      await _rollGarbage();
     }
     if (scoreDelta != null) {
       _compareScore(_dicePosition, scoreDelta);
@@ -274,25 +296,25 @@ class _GameViewState extends State<GameView> {
       _setDie2();
       _setDie3();
     }
-    return Future.delayed(Duration(milliseconds: 1000),
-        () => [_die1, _die2, _die3]..sort((a, b) => a.compareTo(b)));
+    return Future.delayed(
+      Duration(milliseconds: 1000),
+      () => [_die1, _die2, _die3]..sort((a, b) => a.compareTo(b)),
+    );
   }
 
   void handleDiceRoll() async {
     List roll = await rollDice();
-    setState(() {
-      _roll = roll;
-    });
     _scoreRoll(roll);
   }
 
-  void _showSnackBar(String message) {
+  Future<String> _showSnackBar(String message) {
     final snackBar = SnackBar(
       content: Text(message),
       backgroundColor: Colors.indigo[800],
       duration: Duration(milliseconds: 1000),
     );
     Scaffold.of(scaffoldContext).showSnackBar(snackBar);
+    return Future.delayed(Duration(milliseconds: 1000), () => message);
   }
 
   @override
