@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 class CustomDialog extends StatelessWidget {
   final String title, description, buttonText;
-  final int winner;
+  final int winnerPosition;
   final Image image;
 
   CustomDialog({
     @required this.title,
     @required this.description,
     @required this.buttonText,
-    this.winner,
+    this.winnerPosition,
     this.image,
   });
 
@@ -59,7 +59,8 @@ class CustomDialog extends StatelessWidget {
                 alignment: Alignment.bottomRight,
                 child: FlatButton(
                   onPressed: () {
-                    Navigator.of(context).pop(winner); // To close the dialog
+                    Navigator.of(context)
+                        .pop(winnerPosition); // To close the dialog
                   },
                   child: Text(buttonText),
                 ),

@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-class CrapDialog extends StatelessWidget {
+class StatusDialog extends StatelessWidget {
   final int shooter;
   final String title;
   final String description;
 
-  CrapDialog({
+  StatusDialog({
     @required this.shooter,
     @required this.title,
     @required this.description,
@@ -57,12 +57,7 @@ class CrapDialog extends StatelessWidget {
               SizedBox(height: 24.0),
               Align(
                 alignment: Alignment.bottomRight,
-                child: FlatButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(shooter); // To close the dialog
-                  },
-                  child: Text('Close'),
-                ),
+                child: SizedBox(height: 24.0),
               ),
             ],
           ),

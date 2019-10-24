@@ -11,7 +11,7 @@ import 'utils/player_color.dart';
 import 'settings_panel.dart';
 import 'utils/point_to_text.dart';
 import 'dialog.dart';
-import 'crap_dialog.dart';
+import 'status_dialog.dart';
 
 class HomeView extends StatefulWidget {
   @override
@@ -90,27 +90,25 @@ class _GameViewState extends State<GameView> {
     // announce and reset winner
     int winner = _dicePosition + 1;
     setState(() {
-      _pointPosition = [_dicePosition];
       _msg = "HEAD CRACK! 4, 5, 6";
     });
     _showEndGameDialog(context, winner, _msg);
   }
 
   void _crapOut() async {
+    print("Dice Position $_dicePosition Crapped Out");
     setState(() {
       _msg = "SEE YA!!!";
     });
-    // crap dialog future
-    int crapper = await showDialog(
+    await showDialog(
       barrierDismissible: false,
       context: context,
-      builder: (BuildContext context) => CrapDialog(
+      builder: (BuildContext context) => StatusDialog(
         shooter: _dicePosition,
         title: _msg,
         description: "Shooter ${_dicePosition + 1}\nYOU CAUGHT AN L!",
       ),
     );
-    print("Crapper: $crapper");
     _advanceDicePosition();
   }
 
@@ -118,16 +116,23 @@ class _GameViewState extends State<GameView> {
     setState(() {
       _msg = "No dice Shooter ${_dicePosition + 1}";
     });
-    // crap dialog future
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) => CrapDialog(
-          shooter: _dicePosition, title: _msg, description: "ROLL AGAIN!"),
-    );
+    try {
+      await showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) => StatusDialog(
+          shooter: _dicePosition,
+          title: _msg,
+          description: "ROLL AGAIN!",
+        ),
+      );
+      print("Dice Position $_dicePosition roll again");
+    } catch (e) {
+      print("$e");
+    }
   }
 
-  void _resetWinner() {
-    int winnerPosition = _pointPosition[0];
+  void _resetWinner(winnerPosition) {
     setState(() {
       _dicePosition = winnerPosition;
       _startingPosition = winnerPosition;
@@ -153,6 +158,7 @@ class _GameViewState extends State<GameView> {
     if (_pointPosition.length == 1) {
       int winner = _pointPosition[0] + 1;
       String winPoint = "${pointToText(_point)}";
+      print("Winner Dice Position $_dicePosition with $winPoint");
       // end game
       _showEndGameDialog(context, winner, winPoint);
     } else {
@@ -161,19 +167,19 @@ class _GameViewState extends State<GameView> {
     }
   }
 
-  void _showEndGameDialog(context, winner, winPoint) async {
-    int winnerComeOut = await showDialog(
+  void _showEndGameDialog(context, winner, msg) async {
+    int winnerPosition = await showDialog(
       barrierDismissible: false,
       context: context,
       builder: (BuildContext context) => CustomDialog(
         title: "Winner Shooter $winner",
-        winner: winner,
-        description: "Shooter $winner takes the cake\nwith $winPoint",
+        winnerPosition: _dicePosition,
+        description: "Shooter $winner takes the cake\nwith $msg",
         buttonText: "Play again",
       ),
     );
-    print("$winnerComeOut");
-    _resetWinner();
+    print("Winner position $winnerPosition");
+    _resetWinner(winnerPosition);
   }
 
   void _showRollOffDialog(context, players) async {
@@ -191,22 +197,9 @@ class _GameViewState extends State<GameView> {
     _resetRollOff();
   }
 
-/*   void _showResultDialog(context, shooter, title, description) async {
-    await showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) => CrapDialog(
-        shooter: shooter,
-        title: title,
-        description: description,
-      ),
-    );
-  } */
-
-  void _advanceDicePosition() async {
+  void _advanceDicePosition() {
     int newDicePosition = (_dicePosition == players - 1) ? 0 : ++_dicePosition;
     if (newDicePosition == _startingPosition) {
-      //Timer(Duration(milliseconds: 500), () => _checkWinner());
       _checkWinner();
     } else {
       setState(() {
@@ -215,16 +208,11 @@ class _GameViewState extends State<GameView> {
       });
       if (_rollOff) {
         (_rollOffQueue.contains(newDicePosition))
-            ? _showSnackBar(_msg) // change to return?
+            ? print(
+                "ROLL OFF advance dice complete: Dice Position $_dicePosition") // change to return?
             : _advanceDicePosition();
       } else {
-        // _showResultDialog(context, _dicePosition, "Next Shooter", _msg);
-        await showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (BuildContext context) => CrapDialog(
-              shooter: _dicePosition, title: "Next Shooter", description: _msg),
-        );
+        print("advance dice complete: Dice Position $_dicePosition");
       }
     }
   }
@@ -253,16 +241,17 @@ class _GameViewState extends State<GameView> {
     await showDialog(
       barrierDismissible: false,
       context: context,
-      builder: (BuildContext context) => CrapDialog(
-          shooter: _dicePosition,
-          title: "Shooter ${dicePosition + 1}",
-          description: _msg),
+      builder: (BuildContext context) => StatusDialog(
+        shooter: _dicePosition,
+        title: "Shooter ${dicePosition + 1}",
+        description: _msg,
+      ),
     );
+    print("Point is ${pointToText(_point)}");
     _advanceDicePosition();
-    //Timer(Duration(milliseconds: 1500), () => _advanceDicePosition());
   }
 
-  void _scoreRoll(List roll) async {
+  void _scoreRoll(List roll) {
     int scoreDelta;
     bool headcrack = eq(roll, [4, 5, 6]);
     bool crappedOut = eq(roll, [1, 2, 3]);
@@ -334,7 +323,7 @@ class _GameViewState extends State<GameView> {
     _scoreRoll(roll);
   }
 
-  Future<String> _showSnackBar(String message) {
+/*   Future<String> _showSnackBar(String message) {
     final snackBar = SnackBar(
       content: Text(message),
       backgroundColor: Colors.indigo[800],
@@ -342,7 +331,7 @@ class _GameViewState extends State<GameView> {
     );
     Scaffold.of(scaffoldContext).showSnackBar(snackBar);
     return Future.delayed(Duration(milliseconds: 1000), () => message);
-  }
+  } */
 
   @override
   Widget build(BuildContext context) {
