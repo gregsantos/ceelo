@@ -87,6 +87,7 @@ class _GameViewState extends State<GameView> {
 
   /// Dice Logic
   void _headCrack() {
+    // announce and reset winner
     int winner = _dicePosition + 1;
     setState(() {
       _pointPosition = [_dicePosition];
@@ -101,6 +102,7 @@ class _GameViewState extends State<GameView> {
     });
     // crap dialog future
     int crapper = await showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) => CrapDialog(
         shooter: _dicePosition,
@@ -112,21 +114,19 @@ class _GameViewState extends State<GameView> {
     _advanceDicePosition();
   }
 
-  Future<int> _rollGarbage() async {
+  void _rollGarbage() async {
     setState(() {
       _msg = "No dice Shooter ${_dicePosition + 1}";
     });
     // crap dialog future
-    int crapper = await showDialog(
+    await showDialog(
       context: context,
       builder: (BuildContext context) => CrapDialog(
           shooter: _dicePosition, title: _msg, description: "ROLL AGAIN!"),
     );
-    print("$crapper");
-    return crapper;
   }
 
-  void _resetWinner(winnerCome) {
+  void _resetWinner() {
     int winnerPosition = _pointPosition[0];
     setState(() {
       _dicePosition = winnerPosition;
@@ -162,7 +162,8 @@ class _GameViewState extends State<GameView> {
   }
 
   void _showEndGameDialog(context, winner, winPoint) async {
-    int winnerCome = await showDialog(
+    int winnerComeOut = await showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) => CustomDialog(
         title: "Winner Shooter $winner",
@@ -171,12 +172,13 @@ class _GameViewState extends State<GameView> {
         buttonText: "Play again",
       ),
     );
-    print("Winner: $winnerCome");
-    _resetWinner(winnerCome);
+    print("$winnerComeOut");
+    _resetWinner();
   }
 
   void _showRollOffDialog(context, players) async {
     await showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) => CustomDialog(
         title: "ROLL OFF!",
@@ -189,7 +191,19 @@ class _GameViewState extends State<GameView> {
     _resetRollOff();
   }
 
-  void _advanceDicePosition() {
+/*   void _showResultDialog(context, shooter, title, description) async {
+    await showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) => CrapDialog(
+        shooter: shooter,
+        title: title,
+        description: description,
+      ),
+    );
+  } */
+
+  void _advanceDicePosition() async {
     int newDicePosition = (_dicePosition == players - 1) ? 0 : ++_dicePosition;
     if (newDicePosition == _startingPosition) {
       //Timer(Duration(milliseconds: 500), () => _checkWinner());
@@ -201,10 +215,16 @@ class _GameViewState extends State<GameView> {
       });
       if (_rollOff) {
         (_rollOffQueue.contains(newDicePosition))
-            ? _showSnackBar(_msg)
+            ? _showSnackBar(_msg) // change to return?
             : _advanceDicePosition();
       } else {
-        _showSnackBar(_msg);
+        // _showResultDialog(context, _dicePosition, "Next Shooter", _msg);
+        await showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (BuildContext context) => CrapDialog(
+              shooter: _dicePosition, title: "Next Shooter", description: _msg),
+        );
       }
     }
   }
@@ -218,7 +238,7 @@ class _GameViewState extends State<GameView> {
     }
     if (score < _point) {
       setState(() {
-        _msg = "NOT GONE CUT IT Shooter ${dicePosition + 1}!";
+        _msg = "THAT'S NOT GONE CUT IT";
       });
     }
     if (score > _point) {
@@ -226,11 +246,18 @@ class _GameViewState extends State<GameView> {
         _point = score;
         _pointPosition = [dicePosition];
         _msg = _point > 99
-            ? "Shooter ${dicePosition + 1}'s Da Man wit TRIP $_die1's"
-            : "Ok Shooter ${dicePosition + 1} You got the Point with $_point";
+            ? "You Da Man wit TRIP\n$_die1's"
+            : "You got the Point with\n$_point";
       });
     }
-    await _showSnackBar(_msg);
+    await showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) => CrapDialog(
+          shooter: _dicePosition,
+          title: "Shooter ${dicePosition + 1}",
+          description: _msg),
+    );
     _advanceDicePosition();
     //Timer(Duration(milliseconds: 1500), () => _advanceDicePosition());
   }
@@ -252,7 +279,7 @@ class _GameViewState extends State<GameView> {
       scoreDelta = point * 1;
     } else {
       // rolled garbage
-      await _rollGarbage();
+      _rollGarbage();
     }
     if (scoreDelta != null) {
       _compareScore(_dicePosition, scoreDelta);
@@ -311,7 +338,7 @@ class _GameViewState extends State<GameView> {
     final snackBar = SnackBar(
       content: Text(message),
       backgroundColor: Colors.indigo[800],
-      duration: Duration(milliseconds: 1000),
+      duration: Duration(milliseconds: 900),
     );
     Scaffold.of(scaffoldContext).showSnackBar(snackBar);
     return Future.delayed(Duration(milliseconds: 1000), () => message);
