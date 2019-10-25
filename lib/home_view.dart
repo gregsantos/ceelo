@@ -3,11 +3,11 @@ import 'package:flutter/scheduler.dart';
 import 'package:collection/collection.dart';
 import 'dart:math';
 import 'dart:async';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'player_bar.dart';
+/* import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'settings_panel.dart';
+import 'player_bar.dart'; */
 import 'dice_background.dart';
 import 'dice.dart';
-import 'settings_panel.dart';
 import 'utils/point_to_text.dart';
 import 'dialog.dart';
 import 'status_dialog.dart';
@@ -356,15 +356,15 @@ class _GameViewState extends State<GameView> {
             left: -80.0,
             child: Player(0, _dicePosition, _point, _pointPosition),
           ),
-          // point position 0
+          // point position 0 top left
           Positioned(
-            bottom: 50,
-            left: 50,
+            top: 8,
+            left: 10,
             child: Text(
               _pointPosition.contains(0) ? pointToText(_point) : "",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 48,
+                fontSize: 32,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -375,15 +375,15 @@ class _GameViewState extends State<GameView> {
             right: -80.0,
             child: Player(1, _dicePosition, _point, _pointPosition),
           ),
-          // point position 1
+          // point position 1 top right
           Positioned(
-            bottom: 50,
-            left: 50,
+            top: 8,
+            right: 10,
             child: Text(
               _pointPosition.contains(1) ? pointToText(_point) : "",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 48,
+                fontSize: 32,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -394,16 +394,15 @@ class _GameViewState extends State<GameView> {
             bottom: -80.0,
             child: Player(2, _dicePosition, _point, _pointPosition),
           ),
-          // point position 2
+          // point position 2 bottom right
           Positioned(
-            // "top: ${playerPosition + 79}, right: ${playerPosition + 89}",
-            bottom: 50,
-            right: 50,
+            bottom: 8,
+            right: 10,
             child: Text(
               _pointPosition.contains(2) ? pointToText(_point) : "",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 48,
+                fontSize: 32,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -414,15 +413,15 @@ class _GameViewState extends State<GameView> {
             bottom: -80.0,
             child: Player(3, _dicePosition, _point, _pointPosition),
           ),
-          // point position 3
+          // point position 3 bottom left
           Positioned(
-            bottom: 50,
-            left: 50,
+            bottom: 8,
+            left: 10,
             child: Text(
               _pointPosition.contains(3) ? pointToText(_point) : "",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 48,
+                fontSize: 32,
                 fontWeight: FontWeight.bold,
               ),
             ),
