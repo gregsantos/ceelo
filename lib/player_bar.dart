@@ -16,11 +16,15 @@ class PlayerBar extends StatelessWidget {
               offset: Offset(0.0, 0.75))
         ],
       ),
-      padding: EdgeInsets.only(top: 35.0, bottom: 5.0),
+      padding: EdgeInsets.only(),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Icon(Icons.adjust, size: 60.0, color: Colors.pink),
+          Icon(
+            Icons.adjust,
+            size: 60.0,
+            color: Colors.pink,
+          ),
           Icon(
             Icons.adjust,
             size: 60.0,

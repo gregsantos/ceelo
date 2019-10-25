@@ -7,11 +7,11 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'player_bar.dart';
 import 'dice_background.dart';
 import 'dice.dart';
-import 'utils/player_color.dart';
 import 'settings_panel.dart';
 import 'utils/point_to_text.dart';
 import 'dialog.dart';
 import 'status_dialog.dart';
+import 'player.dart';
 
 class HomeView extends StatefulWidget {
   @override
@@ -46,30 +46,36 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SlidingUpPanel(
-          minHeight: 100,
-          maxHeight: 200,
-          color: Colors.indigo[900],
-          slideDirection: SlideDirection.DOWN,
-          backdropEnabled: true,
-          collapsed: PlayerBar(),
-          panel: SettingsPanel(isSelected, handleSelected),
-          body: GameView(background: isSelected[0] ? 'asphalt' : 'felt')),
+      body: SafeArea(
+        child: GameView(
+            background: isSelected[0] ? 'felt' : 'asphalt', players: 4),
+      ),
+/*       body: SlidingUpPanel(
+        minHeight: 75,
+        maxHeight: 200,
+        color: Colors.indigo[900],
+        slideDirection: SlideDirection.UP,
+        backdropEnabled: true,
+        collapsed: PlayerBar(),
+        panel: SettingsPanel(isSelected, handleSelected),
+        body: GameView(background: isSelected[0] ? 'asphalt' : 'felt'),
+      ), */
     );
   }
 }
 
 class GameView extends StatefulWidget {
   final String background;
+  final int players;
 
-  GameView({this.background});
+  GameView({this.background, this.players});
 
   @override
   _GameViewState createState() => _GameViewState();
 }
 
 class _GameViewState extends State<GameView> {
-  final int players = 4;
+  // final int players = 4;
   static final int random = Random().nextInt(3) + 1;
   BuildContext scaffoldContext;
   int _startingPosition = random;
@@ -198,7 +204,8 @@ class _GameViewState extends State<GameView> {
   }
 
   void _advanceDicePosition() {
-    int newDicePosition = (_dicePosition == players - 1) ? 0 : ++_dicePosition;
+    int newDicePosition =
+        (_dicePosition == widget.players - 1) ? 0 : ++_dicePosition;
     if (newDicePosition == _startingPosition) {
       _checkWinner();
     } else {
@@ -343,61 +350,93 @@ class _GameViewState extends State<GameView> {
           DiceBackground(
             background: widget.background,
           ),
+          // Position 0 top left
+          Positioned(
+            top: -80.0,
+            left: -80.0,
+            child: Player(0, _dicePosition, _point, _pointPosition),
+          ),
+          // point position 0
+          Positioned(
+            bottom: 50,
+            left: 50,
+            child: Text(
+              _pointPosition.contains(0) ? pointToText(_point) : "",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 48,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          // Position 1 top right
+          Positioned(
+            top: -80.0,
+            right: -80.0,
+            child: Player(1, _dicePosition, _point, _pointPosition),
+          ),
+          // point position 1
+          Positioned(
+            bottom: 50,
+            left: 50,
+            child: Text(
+              _pointPosition.contains(1) ? pointToText(_point) : "",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 48,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          // Position 2 bottom right
+          Positioned(
+            right: -80.0,
+            bottom: -80.0,
+            child: Player(2, _dicePosition, _point, _pointPosition),
+          ),
+          // point position 2
+          Positioned(
+            // "top: ${playerPosition + 79}, right: ${playerPosition + 89}",
+            bottom: 50,
+            right: 50,
+            child: Text(
+              _pointPosition.contains(2) ? pointToText(_point) : "",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 48,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          // Position 3 bottom left
+          Positioned(
+            left: -80.0,
+            bottom: -80.0,
+            child: Player(3, _dicePosition, _point, _pointPosition),
+          ),
+          // point position 3
+          Positioned(
+            bottom: 50,
+            left: 50,
+            child: Text(
+              _pointPosition.contains(3) ? pointToText(_point) : "",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 48,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
           Dice(_die1, _die2, _die3),
-          Positioned(
-            bottom: 10.0,
-            left: 20.0,
-            child: SafeArea(
-              child: Container(
-                child: Column(
-                  children: <Widget>[
-                    Icon(
-                      Icons.adjust,
-                      size: 60.0,
-                      color: getPointColor(_dicePosition),
-                    ),
-                    Text(
-                      "Shooter",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 10.0,
-            right: 20.0,
-            child: SafeArea(
-              child: Container(
-                child: Column(
-                  children: <Widget>[
-                    Text(
-                      pointToText(_point),
-                      style: TextStyle(
-                          color: getPointColor(_pointPosition.length == 0
-                              ? 9
-                              : _pointPosition[0]),
-                          fontSize: 48,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      "Point",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
   }
+}
+
+enum PlayerPosition {
+  topLeft,
+  topRight,
+  bottomRight,
+  bottomLeft,
 }

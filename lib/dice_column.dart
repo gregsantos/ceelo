@@ -40,13 +40,9 @@ class DiceColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 80.0, bottom: 0.0),
-        child: Column(
-          children: [getDie(_die1), getDie(_die2), getDie(_die3)],
-        ),
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [getDie(_die1), getDie(_die2), getDie(_die3)],
     );
   }
 }

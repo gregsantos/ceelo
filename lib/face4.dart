@@ -3,24 +3,27 @@ import 'package:flutter/material.dart';
 class Face4 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    const double size = 146.52;
+    const double pipSize = size / 3.3;
+    const double pipPadding = size / 88;
     // ( alpha,  hue,  saturation,  lightness) hsla(0, 100%, 50%, 0.6)
-    HSLColor bg = HSLColor.fromAHSL(0.6, 0.0, 1.0, 0.5);
+    HSLColor bg = HSLColor.fromAHSL(0.5, 0.0, 1.0, 0.5);
     return Container(
-      width: 198.0,
-      height: 198.0,
+      width: size,
+      height: size,
       decoration: BoxDecoration(color: bg.toColor()),
       child: Padding(
-        padding: const EdgeInsets.all(2.25),
+        padding: const EdgeInsets.all(pipPadding),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Column(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.all(2.25),
+                  padding: const EdgeInsets.all(pipPadding),
                   child: Container(
-                    width: 60,
-                    height: 60,
+                    width: pipSize,
+                    height: pipSize,
                     decoration: BoxDecoration(
                       color: Colors.grey[100],
                       shape: BoxShape.circle,
@@ -28,17 +31,17 @@ class Face4 extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(2.25),
+                  padding: const EdgeInsets.all(pipPadding),
                   child: Container(
-                    width: 60,
-                    height: 60,
+                    width: pipSize,
+                    height: pipSize,
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(2.25),
+                  padding: const EdgeInsets.all(pipPadding),
                   child: Container(
-                    width: 60,
-                    height: 60,
+                    width: pipSize,
+                    height: pipSize,
                     decoration: BoxDecoration(
                       color: Colors.grey[100],
                       shape: BoxShape.circle,
@@ -50,17 +53,17 @@ class Face4 extends StatelessWidget {
             Column(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.all(2.25),
+                  padding: const EdgeInsets.all(pipPadding),
                   child: Container(
-                    width: 60,
-                    height: 60,
+                    width: pipSize,
+                    height: pipSize,
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(2.25),
+                  padding: const EdgeInsets.all(pipPadding),
                   child: Container(
-                    width: 60,
-                    height: 60,
+                    width: pipSize,
+                    height: pipSize,
                   ),
                 ),
               ],
@@ -68,10 +71,10 @@ class Face4 extends StatelessWidget {
             Column(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.all(2.25),
+                  padding: const EdgeInsets.all(pipPadding),
                   child: Container(
-                    width: 60,
-                    height: 60,
+                    width: pipSize,
+                    height: pipSize,
                     decoration: BoxDecoration(
                       color: Colors.grey[100],
                       shape: BoxShape.circle,
@@ -79,17 +82,17 @@ class Face4 extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(2.25),
+                  padding: const EdgeInsets.all(pipPadding),
                   child: Container(
-                    width: 60,
-                    height: 60,
+                    width: pipSize,
+                    height: pipSize,
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(2.25),
+                  padding: const EdgeInsets.all(pipPadding),
                   child: Container(
-                    width: 60,
-                    height: 60,
+                    width: pipSize,
+                    height: pipSize,
                     decoration: BoxDecoration(
                       color: Colors.grey[100],
                       shape: BoxShape.circle,
