@@ -164,9 +164,9 @@ class _GameViewState extends State<GameView> {
     if (_pointPosition.length == 1) {
       int winner = _pointPosition[0] + 1;
       String winPoint = "${pointToText(_point)}";
-      print("Winner Dice Position $_dicePosition with $winPoint");
+      print("Winner Dice Position $winner with $winPoint");
       // end game
-      _showEndGameDialog(context, winner, winPoint);
+      _showEndGameDialog(context, _pointPosition[0], winPoint);
     } else {
       // roll off
       _showRollOffDialog(context, _rollOffQueue);
@@ -179,7 +179,7 @@ class _GameViewState extends State<GameView> {
       context: context,
       builder: (BuildContext context) => CustomDialog(
         title: "Winner Shooter $winner",
-        winnerPosition: _dicePosition,
+        winnerPosition: winner,
         description: "Shooter $winner takes the cake\nwith $msg",
         buttonText: "Play again",
       ),
@@ -194,7 +194,8 @@ class _GameViewState extends State<GameView> {
       context: context,
       builder: (BuildContext context) => CustomDialog(
         title: "ROLL OFF!",
-        description: "Double down and roll again!\nPlayers ${players.map((p) {
+        description:
+            "Double down and roll again!\nPlayers ${_pointPosition.map((p) {
           return p;
         })}",
         buttonText: "Start Roll Off",
