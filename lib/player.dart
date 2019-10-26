@@ -5,9 +5,16 @@ class Player extends StatelessWidget {
   final int playerPosition;
   final int dicePositon;
   final int point;
-  final List pointPosition;
+  final List<int> pointPosition;
+  final List<int> off;
 
-  Player(this.playerPosition, this.dicePositon, this.point, this.pointPosition);
+  Player(
+    this.playerPosition,
+    this.dicePositon,
+    this.point,
+    this.pointPosition,
+    this.off,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +29,9 @@ class Player extends StatelessWidget {
             : Icon(
                 Icons.brightness_1,
                 size: 160.0,
-                color: getPositionColor(playerPosition),
+                color: off.contains(playerPosition)
+                    ? getPositionColor(playerPosition).withOpacity(0.3)
+                    : getPositionColor(playerPosition),
               ),
       ],
     );

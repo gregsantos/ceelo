@@ -84,18 +84,21 @@ class _GameViewState extends State<GameView> {
   int _die2 = 5;
   int _die3 = 6;
   int _point = 0;
-  // List _roll = [];
-  List _pointPosition = [];
-  List _rollOffQueue = [];
+  // List<int> _roll = [];
+  List<int> _pointPosition = [];
+  List<int> _off = [];
+  List<int> _rollOffQueue = [];
   bool _rollOff = false;
   String _msg = '';
   Function eq = const ListEquality().equals;
 
   /// Dice Logic
   void _headCrack() {
-    // announce and reset winner
-    int winner = _dicePosition + 1;
+    // clear point, announce and reset winner
+    int winner = _dicePosition;
     setState(() {
+      _point = 0;
+      _pointPosition = [];
       _msg = "HEAD CRACK! 4, 5, 6";
     });
     _showEndGameDialog(context, winner, _msg);
@@ -103,18 +106,19 @@ class _GameViewState extends State<GameView> {
 
   void _crapOut() async {
     print("Dice Position $_dicePosition Crapped Out");
-    setState(() {
-      _msg = "SEE YA!!!";
-    });
     await showDialog(
       barrierDismissible: false,
       context: context,
       builder: (BuildContext context) => StatusDialog(
         shooter: _dicePosition,
-        title: _msg,
+        title: "SEE YA!!!",
         description: "Shooter ${_dicePosition + 1}\nYOU CAUGHT AN L!",
       ),
     );
+    setState(() {
+      _off.add(_dicePosition);
+    });
+    print("$_off");
     _advanceDicePosition();
   }
 
@@ -144,6 +148,7 @@ class _GameViewState extends State<GameView> {
       _startingPosition = winnerPosition;
       _point = 0;
       _pointPosition = [];
+      _off = [];
       _rollOff = false;
       _rollOffQueue = [];
     });
@@ -162,11 +167,11 @@ class _GameViewState extends State<GameView> {
 
   void _checkWinner() {
     if (_pointPosition.length == 1) {
-      int winner = _pointPosition[0] + 1;
-      String winPoint = "${pointToText(_point)}";
-      print("Winner Dice Position $winner with $winPoint");
+      int winner = _pointPosition[0];
+      String msg = "${pointToText(_point)}";
+      print("Winner Dice Position ${winner + 1} with $msg");
       // end game
-      _showEndGameDialog(context, _pointPosition[0], winPoint);
+      _showEndGameDialog(context, _pointPosition[0], msg);
     } else {
       // roll off
       _showRollOffDialog(context, _rollOffQueue);
@@ -178,9 +183,9 @@ class _GameViewState extends State<GameView> {
       barrierDismissible: false,
       context: context,
       builder: (BuildContext context) => CustomDialog(
-        title: "Winner Shooter $winner",
+        title: "Winner Shooter ${winner + 1}",
         winnerPosition: winner,
-        description: "Shooter $winner takes the cake\nwith $msg",
+        description: "Shooter ${winner + 1} takes the cake\nwith $msg",
         buttonText: "Play again",
       ),
     );
@@ -234,6 +239,7 @@ class _GameViewState extends State<GameView> {
     }
     if (score < _point) {
       setState(() {
+        _off.add(_dicePosition);
         _msg = "THAT'S NOT GONE CUT IT";
       });
     }
@@ -355,76 +361,136 @@ class _GameViewState extends State<GameView> {
           Positioned(
             top: -80.0,
             left: -80.0,
-            child: Player(0, _dicePosition, _point, _pointPosition),
+            child: Player(0, _dicePosition, _point, _pointPosition, _off),
           ),
           // point position 0 top left
           Positioned(
-            top: 8,
+            top: 6,
             left: 10,
-            child: Text(
-              _pointPosition.contains(0) ? pointToText(_point) : "",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              ),
+            child: Stack(
+              children: <Widget>[
+                // Stroked text as border.
+                Text(
+                  _pointPosition.contains(0) ? pointToText(_point) : "",
+                  style: TextStyle(
+                    fontSize: 40,
+                    foreground: Paint()
+                      ..style = PaintingStyle.stroke
+                      ..strokeWidth = 6
+                      ..color = Colors.black,
+                  ),
+                ),
+                // Solid text as fill.
+                Text(
+                  _pointPosition.contains(0) ? pointToText(_point) : "",
+                  style: TextStyle(
+                    fontSize: 40,
+                    color: Colors.grey[300],
+                  ),
+                ),
+              ],
             ),
           ),
           // Position 1 top right
           Positioned(
             top: -80.0,
             right: -80.0,
-            child: Player(1, _dicePosition, _point, _pointPosition),
+            child: Player(1, _dicePosition, _point, _pointPosition, _off),
           ),
           // point position 1 top right
           Positioned(
-            top: 8,
+            top: 6,
             right: 10,
-            child: Text(
-              _pointPosition.contains(1) ? pointToText(_point) : "",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              ),
+            child: Stack(
+              children: <Widget>[
+                // Stroked text as border.
+                Text(
+                  _pointPosition.contains(1) ? pointToText(_point) : "",
+                  style: TextStyle(
+                    fontSize: 40,
+                    foreground: Paint()
+                      ..style = PaintingStyle.stroke
+                      ..strokeWidth = 6
+                      ..color = Colors.black,
+                  ),
+                ),
+                // Solid text as fill.
+                Text(
+                  _pointPosition.contains(1) ? pointToText(_point) : "",
+                  style: TextStyle(
+                    fontSize: 40,
+                    color: Colors.grey[300],
+                  ),
+                ),
+              ],
             ),
           ),
           // Position 2 bottom right
           Positioned(
             right: -80.0,
             bottom: -80.0,
-            child: Player(2, _dicePosition, _point, _pointPosition),
+            child: Player(2, _dicePosition, _point, _pointPosition, _off),
           ),
           // point position 2 bottom right
           Positioned(
-            bottom: 8,
+            bottom: 6,
             right: 10,
-            child: Text(
-              _pointPosition.contains(2) ? pointToText(_point) : "",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              ),
+            child: Stack(
+              children: <Widget>[
+                // Stroked text as border.
+                Text(
+                  _pointPosition.contains(2) ? pointToText(_point) : "",
+                  style: TextStyle(
+                    fontSize: 40,
+                    foreground: Paint()
+                      ..style = PaintingStyle.stroke
+                      ..strokeWidth = 6
+                      ..color = Colors.black,
+                  ),
+                ),
+                // Solid text as fill.
+                Text(
+                  _pointPosition.contains(2) ? pointToText(_point) : "",
+                  style: TextStyle(
+                    fontSize: 40,
+                    color: Colors.grey[300],
+                  ),
+                ),
+              ],
             ),
           ),
           // Position 3 bottom left
           Positioned(
             left: -80.0,
             bottom: -80.0,
-            child: Player(3, _dicePosition, _point, _pointPosition),
+            child: Player(3, _dicePosition, _point, _pointPosition, _off),
           ),
           // point position 3 bottom left
           Positioned(
-            bottom: 8,
+            bottom: 6,
             left: 10,
-            child: Text(
-              _pointPosition.contains(3) ? pointToText(_point) : "",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              ),
+            child: Stack(
+              children: <Widget>[
+                // Stroked text as border.
+                Text(
+                  _pointPosition.contains(3) ? pointToText(_point) : "",
+                  style: TextStyle(
+                    fontSize: 40,
+                    foreground: Paint()
+                      ..style = PaintingStyle.stroke
+                      ..strokeWidth = 6
+                      ..color = Colors.black,
+                  ),
+                ),
+                // Solid text as fill.
+                Text(
+                  _pointPosition.contains(3) ? pointToText(_point) : "",
+                  style: TextStyle(
+                    fontSize: 40,
+                    color: Colors.grey[300],
+                  ),
+                ),
+              ],
             ),
           ),
           Dice(_die1, _die2, _die3),
