@@ -1,6 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'utils/player_color.dart';
 
 class StatusDialog extends StatelessWidget {
   final int shooter;
@@ -66,7 +66,7 @@ class StatusDialog extends StatelessWidget {
           left: Consts.padding,
           right: Consts.padding,
           child: CircleAvatar(
-            backgroundColor: Colors.blueAccent,
+            backgroundColor: getPositionColor(shooter),
             radius: Consts.avatarRadius,
           ),
         ),
@@ -78,7 +78,7 @@ class StatusDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Timer(
-      Duration(milliseconds: 1500),
+      Duration(milliseconds: 1000),
       () => Navigator.of(context).pop(shooter),
     );
     return Dialog(

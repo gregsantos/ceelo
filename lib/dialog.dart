@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'utils/player_color.dart';
 
 class CustomDialog extends StatelessWidget {
   final String title, description, buttonText;
@@ -72,7 +73,7 @@ class CustomDialog extends StatelessWidget {
           left: Consts.padding,
           right: Consts.padding,
           child: CircleAvatar(
-            backgroundColor: Colors.blueAccent,
+            backgroundColor: getPositionColor(winnerPosition),
             radius: Consts.avatarRadius,
           ),
         ),

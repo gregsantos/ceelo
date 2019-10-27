@@ -124,7 +124,7 @@ class _GameViewState extends State<GameView> {
 
   void _rollGarbage() async {
     setState(() {
-      _msg = "No dice Shooter ${_dicePosition + 1}";
+      _msg = "No point Shooter ${_dicePosition + 1}";
     });
     try {
       await showDialog(

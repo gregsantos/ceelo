@@ -7,11 +7,11 @@ class Face3 extends StatelessWidget {
     const double pipSize = size / 3.3;
     const double pipPadding = size / 88;
     // ( alpha,  hue,  saturation,  lightness) hsla(0, 100%, 50%, 0.6)
-    HSLColor bg = HSLColor.fromAHSL(0.5, 0.0, 1.0, 0.5);
+    Color bg = HSLColor.fromAHSL(0.5, 0.0, 1.0, 0.5).toColor();
     return Container(
       width: 146.52,
       height: 146.52,
-      decoration: BoxDecoration(color: bg.toColor()),
+      decoration: BoxDecoration(color: bg),
       child: Padding(
         padding: const EdgeInsets.all(pipPadding),
         child: Row(

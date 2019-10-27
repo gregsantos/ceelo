@@ -30,7 +30,7 @@ class Player extends StatelessWidget {
                 Icons.brightness_1,
                 size: 160.0,
                 color: off.contains(playerPosition)
-                    ? getPositionColor(playerPosition).withOpacity(0.3)
+                    ? getPositionColor(playerPosition).withOpacity(0.4)
                     : getPositionColor(playerPosition),
               ),
       ],
